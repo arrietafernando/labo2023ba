@@ -5,13 +5,34 @@
 rm(list = ls()) # Borro todos los objetos
 gc() # Garbage Collection
 
+################################################################################
+################################################################################
+
+#ENV = "GCP"
+ENV = "MAC"
+
+LABO_PROJ_WD   = getwd()
+if(ENV == "MAC") {
+  LABO_BUCKET_WD = paste0(LABO_PROJ_WD, "/buckets")
+} else {
+  LABO_BUCKET_WD = paste0("~/buckets/b1/")
+}
+LABO_DATA_WD   = paste0(LABO_BUCKET_WD, "/datasets")
+LABO_EXP_WD    = paste0(LABO_BUCKET_WD, "/exp")
+
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
+
+################################################################################
+################################################################################
+
+
 require("data.table")
 require("rpart")
 require("parallel")
 
 PARAM <- list()
 # reemplazar por las propias semillas
-PARAM$semillas <- c(102191, 200177, 410551, 552581, 892237)
+PARAM$semillas <- MIS_SEMILLAS
 
 #------------------------------------------------------------------------------
 # particionar agrega una columna llamada fold a un dataset
@@ -89,11 +110,12 @@ ArbolesMontecarlo <- function(semillas, param_basicos) {
 #------------------------------------------------------------------------------
 
 # Aqui se debe poner la carpeta de la computadora local
-setwd("~/buckets/b1/") # Establezco el Working Directory
-# cargo los datos
+#setwd("~/buckets/b1/") # Establezco el Working Directory
+setwd(LABO_PROJ_WD) # Establezco el Working Directory
 
-# cargo los datos
-dataset <- fread("./datasets/dataset_pequeno.csv")
+# cargo el dataset
+#dataset <- fread("./datasets/dataset_pequeno.csv")
+dataset <- fread( paste0(LABO_DATA_WD, "/dataset_pequeno.csv") )
 
 # trabajo solo con los datos con clase, es decir 202107
 dataset <- dataset[clase_ternaria != ""]
@@ -101,9 +123,12 @@ dataset <- dataset[clase_ternaria != ""]
 # genero el archivo para Kaggle
 # creo la carpeta donde va el experimento
 # HT  representa  Hiperparameter Tuning
-dir.create("./exp/", showWarnings = FALSE)
-dir.create("./exp/HT2020/", showWarnings = FALSE)
-archivo_salida <- "./exp/HT2020/gridsearch.txt"
+#dir.create("./exp/", showWarnings = FALSE)
+#dir.create("./exp/HT2020/", showWarnings = FALSE)
+#archivo_salida <- "./exp/HT2020/gridsearch.txt"
+dir.create(LABO_EXP_WD, showWarnings = FALSE)
+dir.create(paste0(LABO_EXP_WD, "/HT2020"), showWarnings = FALSE)
+archivo_salida <- paste0(LABO_EXP_WD, "/HT2020", "/gridsearch.txt")
 
 # Escribo los titulos al archivo donde van a quedar los resultados
 # atencion que si ya existe el archivo, esta instruccion LO SOBREESCRIBE,

@@ -1,3 +1,24 @@
+################################################################################
+################################################################################
+
+#ENV = "GCP"
+ENV = "MAC"
+
+LABO_PROJ_WD   = getwd()
+if(ENV == "MAC") {
+  LABO_BUCKET_WD = paste0(LABO_PROJ_WD, "/buckets")
+} else {
+  LABO_BUCKET_WD = paste0("~/buckets/b1/")
+}
+LABO_DATA_WD   = paste0(LABO_BUCKET_WD, "/datasets")
+LABO_EXP_WD    = paste0(LABO_BUCKET_WD, "/exp")
+
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
+
+################################################################################
+################################################################################
+
+
 # Arbol elemental con libreria  rpart
 # Debe tener instaladas las librerias  data.table  ,  rpart  y  rpart.plot
 
@@ -7,10 +28,12 @@ require("rpart")
 require("rpart.plot")
 
 # Aqui se debe poner la carpeta de la materia de SU computadora local
-setwd("~/buckets/b1/") # Establezco el Working Directory
+#setwd("~/buckets/b1/") # Establezco el Working Directory
+setwd(LABO_PROJ_WD) # Establezco el Working Directory
 
 # cargo el dataset
-dataset <- fread("./datasets/dataset_pequeno.csv")
+#dataset <- fread("./datasets/dataset_pequeno.csv")
+dataset <- fread( paste0(LABO_DATA_WD, "/dataset_pequeno.csv") )
 
 dtrain <- dataset[foto_mes == 202107] # defino donde voy a entrenar
 dapply <- dataset[foto_mes == 202109] # defino donde voy a aplicar el modelo
@@ -55,11 +78,14 @@ dapply[, Predicted := as.numeric(prob_baja2 > 1 / 40)]
 
 # genero el archivo para Kaggle
 # primero creo la carpeta donde va el experimento
-dir.create("./exp/")
-dir.create("./exp/KA2001")
+#dir.create("./exp/")
+#dir.create("./exp/KA2001")
+dir.create(paste0(LABO_EXP_WD, "/KA2001"))
 
 # solo los campos para Kaggle
 fwrite(dapply[, list(numero_de_cliente, Predicted)],
-        file = "./exp/KA2001/K101_001.csv",
-        sep = ","
+       #file = "./exp/KA2001/K101_002.csv",
+       file = paste0(LABO_EXP_WD, "/KA2001/K101_001.csv"),
+       sep = ","
 )
+
