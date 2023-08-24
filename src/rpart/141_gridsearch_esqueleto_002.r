@@ -139,7 +139,7 @@ cat(
   sep = "",
   "max_depth", "\t",
   "min_split", "\t",
-  "minbucket", "\t",
+  "min_bucket", "\t",
   "cp", "\t",
   "ganancia_promedio", "\n"
 )
@@ -161,7 +161,7 @@ for (vmax_depth in c(4, 6, 8, 10, 12, 14)) {
             "cp: ", vcp, "\n"
             )
         
-        if(vmin_bucket == 1) { next }
+        if(vmin_bucket < 2) { next }
         
         # vminsplit  minima cantidad de registros en un nodo para hacer el split
         param_basicos <- list(
