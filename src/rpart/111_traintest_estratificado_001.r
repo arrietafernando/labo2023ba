@@ -31,13 +31,10 @@ PARAM$semilla <- 591067
 #------------------------------------------------------------------------------
 # particionar agrega una columna llamada fold a un dataset
 #  que consiste en una particion estratificada segun agrupa
-
 # particionar( data=dataset, division=c(70,30),
 #  agrupa=clase_ternaria, seed=semilla)   crea una particion 70, 30
 
-particionar <- function(
-    data, division, agrupa = "",
-    campo = "fold", start = 1, seed = NA) {
+particionar <- function(data, division, agrupa = "", campo = "fold", start = 1, seed = NA) {
   if (!is.na(seed)) set.seed(seed)
 
   bloque <- unlist(mapply(function(x, y) {
@@ -49,6 +46,7 @@ particionar <- function(
   ]
 }
 #------------------------------------------------------------------------------
+
 #------------------------------------------------------------------------------
 # Aqui comienza el programa
 

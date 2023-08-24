@@ -58,7 +58,7 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
   particionar(dataset, division = c(7, 3), agrupa = "clase_ternaria", seed = semilla)
 
   # genero el modelo
-  # quiero predecir clase_ternaria a partir del resto
+  # predecir clase_ternaria a partir del resto
   modelo <- rpart("clase_ternaria ~ .",
     data = dataset[fold == 1], # fold==1  es training,  el 70% de los datos
     xval = 0,
@@ -158,8 +158,8 @@ for (vmax_depth in c(4, 6, 8, 10, 12, 14)) {
     ) # profundidad máxima del arbol
 
     # Un solo llamado, con la semilla 17
-    ganancia_promedio <- ArbolesMontecarlo(ksemillas, param_basicos)
-
+    #ganancia_promedio <- ArbolesMontecarlo(ksemillas, param_basicos)
+    ganancia_promedio <- ArbolesMontecarlo(PARAM$semillas, param_basicos)
     # escribo los resultados al archivo de salida
     cat(
       file = archivo_salida,
