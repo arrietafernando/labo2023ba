@@ -107,6 +107,29 @@ ArbolesMontecarlo <- function(semillas, param_basicos) {
   return(ganancia_promedio)
 }
 #------------------------------------------------------------------------------
+
+library(future.apply)
+
+ArbolesMontecarlo_future <- function(semillas, param_basicos) {
+  # la funcion mcmapply  llama a la funcion ArbolEstimarGanancia
+  #  tantas veces como valores tenga el vector  ksemillas
+
+  plan(sequential)
+  #plan(multisession, workers = nbrOfWorkers())
+  #plan(multisession, workers = 10)
+  plan(multisession)
+  
+  ganancias <- future_mapply(ArbolEstimarGanancia,
+                        semillas, # paso el vector de semillas
+                        MoreArgs = list(param_basicos), # aqui paso el segundo parametro
+                        SIMPLIFY = FALSE,
+                        future.seed = FALSE
+  ) # se puede subir a 5 si posee Linux o Mac OS
+  
+  ganancia_promedio <- mean(unlist(ganancias))
+  
+  return(ganancia_promedio)
+}
 #------------------------------------------------------------------------------
 
 # Aqui se debe poner la carpeta de la computadora local
@@ -128,7 +151,7 @@ dataset <- dataset[clase_ternaria != ""]
 #archivo_salida <- "./exp/HT2020/gridsearch.txt"
 dir.create(LABO_EXP_WD, showWarnings = FALSE)
 dir.create(paste0(LABO_EXP_WD, "/HT2020"), showWarnings = FALSE)
-archivo_salida <- paste0(LABO_EXP_WD, "/HT2020", "/gridsearch_002.txt")
+archivo_salida <- paste0(LABO_EXP_WD, "/HT2020", "/gridsearch_003.txt")
 
 # Escribo los titulos al archivo donde van a quedar los resultados
 # atencion que si ya existe el archivo, esta instruccion LO SOBREESCRIBE,
@@ -172,8 +195,8 @@ for (vmax_depth in c(4, 6, 8, 10, 12, 14)) {
         ) # profundidad máxima del arbol
         
         # Un solo llamado, con la semilla 17
-        #ganancia_promedio <- ArbolesMontecarlo(ksemillas, param_basicos)
-        ganancia_promedio <- ArbolesMontecarlo(PARAM$semillas, param_basicos)
+        #ganancia_promedio <- ArbolesMontecarlo(PARAM$semillas, param_basicos)
+        ganancia_promedio <- ArbolesMontecarlo_future(PARAM$semillas, param_basicos)
         # escribo los resultados al archivo de salida
         cat(
           file = archivo_salida,
