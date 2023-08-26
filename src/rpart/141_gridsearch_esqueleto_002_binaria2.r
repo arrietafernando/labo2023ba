@@ -62,13 +62,12 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
   modelo <- rpart("clase_binaria2 ~ .",
     data = dataset[fold == 1], # fold==1  es training,  el 70% de los datos
     xval = 0,
-    control = param_basicos,
-    method = "class"
+    control = param_basicos
   ) # aqui van los parametros del arbol
 
   # aplico el modelo a los datos de testing
-  prediccion <- predict(modelo, # el modelo que genere recien
-    data = dataset[fold == 2], # fold==2  es testing, el 30% de los datos
+  prediccion <- rpart.predict(modelo, # el modelo que genere recien
+    newdata = dataset[fold == 2], # fold==2  es testing, el 30% de los datos
     type = "prob"
   ) # type= "prob"  es que devuelva la probabilidad
 
@@ -86,9 +85,10 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
     ))
   ]
 
-  dataset[ fold == 2, .N ]
-  dataset[ fold == 2, sum(ifelse(prediccion[, "pos"] > 0.025, ifelse(clase_binaria2 == "pos", 1, 0), 0)) ]
-  dataset[ fold == 2, sum(ifelse(prediccion[, "pos"] < 0.025, ifelse(clase_binaria2 == "pos", 1, 0), 0)) ]
+  #dataset[ fold == 1, .N ]
+  #dataset[ fold == 2, .N ]
+  #dataset[ fold == 2, sum(ifelse(prediccion[, "pos"] > 0.025, ifelse(clase_binaria2 == "pos", 1, 0), 0)) ]
+  #dataset[ fold == 2, sum(ifelse(prediccion[, "pos"] < 0.025, ifelse(clase_binaria2 == "pos", 1, 0), 0)) ]
   
   # escalo la ganancia como si fuera todo el dataset
   ganancia_test_normalizada <- ganancia_test / 0.3
@@ -202,7 +202,7 @@ for (vmax_depth in c(4, 6, 8, 10, 12, 14)) {
             "minsplit: ", vmin_split, "\t",
             "minbucket: ", vmin_bucket, "\t",
             "cp: ", vcp, "\t",
-            "ganancia_promedio: ", ganancia_promedio,
+            "ganancia_promedio: ", format(ganancia_promedio, big.mark="."),
             "\n"
         )
         
