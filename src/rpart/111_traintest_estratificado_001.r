@@ -7,7 +7,7 @@ gc() # Garbage Collection
 #ENV = "GCP"
 ENV = "MAC"
 
-LABO_PROJ_WD   = getwd()
+LABO_PROJ_WD   = setwd("..")
 if(ENV == "MAC") {
   LABO_BUCKET_WD = paste0(LABO_PROJ_WD, "/buckets")
 } else {

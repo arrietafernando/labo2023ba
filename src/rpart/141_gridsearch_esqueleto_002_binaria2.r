@@ -55,11 +55,11 @@ particionar <- function(data, division, agrupa = "", campo = "fold", start = 1, 
 
 ArbolEstimarGanancia <- function(semilla, param_basicos) {
   # particiono estratificadamente el dataset
-  particionar(dataset, division = c(7, 3), agrupa = "clase_ternaria", seed = semilla)
+  particionar(dataset, division = c(7, 3), agrupa = "clase_binaria2", seed = semilla)
 
   # genero el modelo
-  # predecir clase_ternaria a partir del resto
-  modelo <- rpart("clase_ternaria ~ .",
+  # predecir clase_binaria2 a partir del resto
+  modelo <- rpart("clase_binaria2 ~ .",
     data = dataset[fold == 1], # fold==1  es training,  el 70% de los datos
     xval = 0,
     control = param_basicos
@@ -67,7 +67,7 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
 
   # aplico el modelo a los datos de testing
   prediccion <- predict(modelo, # el modelo que genere recien
-    dataset[fold == 2], # fold==2  es testing, el 30% de los datos
+    data = dataset[fold == 2], # fold==2  es testing, el 30% de los datos
     type = "prob"
   ) # type= "prob"  es que devuelva la probabilidad
 
@@ -79,15 +79,15 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
   # calculo la ganancia en testing  qu es fold==2
   ganancia_test <- dataset[
     fold == 2,
-    sum(ifelse(prediccion[, "BAJA+2"] > 0.025,
-      ifelse(clase_ternaria == "BAJA+2", 117000, -3000),
+    sum(ifelse(prediccion[, "pos"] > 0.025,
+      ifelse(clase_binaria2 == "pos", 117000, -3000),
       0
     ))
   ]
-  
+
   dataset[ fold == 2, .N ]
-  dataset[ fold == 2, sum(prediccion[, "BAJA+2"] > 0.025) ]
-  dataset[ fold == 2, sum(prediccion[, "BAJA+2"] < 0.025) ]
+  dataset[ fold == 2, sum(prediccion[, "pos"] > 0.025) ]
+  dataset[ fold == 2, sum(prediccion[, "pos"] < 0.025) ]
   
   # escalo la ganancia como si fuera todo el dataset
   ganancia_test_normalizada <- ganancia_test / 0.3
@@ -124,6 +124,18 @@ dataset <- fread( paste0(LABO_DATA_WD, "/dataset_pequeno.csv") )
 # trabajo solo con los datos con clase, es decir 202107
 dataset <- dataset[clase_ternaria != ""]
 
+### 
+# Genero la clase_binaria2
+dataset[, "clase_binaria2" := as.character(ifelse(dataset[, "clase_ternaria"] == "BAJA+2" | dataset[, "clase_ternaria"] == "BAJA+1", "pos", "neg"))]
+
+# Cuento nro de registros por clase
+dataset[, .N, by = clase_ternaria]
+dataset[, .N, by = clase_binaria2]
+
+# Borro clase_ternaria
+dataset[ ,  "clase_ternaria" := NULL    ]
+###
+
 # genero el archivo para Kaggle
 # creo la carpeta donde va el experimento
 # HT  representa  Hiperparameter Tuning
@@ -132,7 +144,7 @@ dataset <- dataset[clase_ternaria != ""]
 #archivo_salida <- "./exp/HT2020/gridsearch.txt"
 dir.create(LABO_EXP_WD, showWarnings = FALSE)
 dir.create(paste0(LABO_EXP_WD, "/HT2020"), showWarnings = FALSE)
-archivo_salida <- paste0(LABO_EXP_WD, "/HT2020", "/gridsearch_002.txt")
+archivo_salida <- paste0(LABO_EXP_WD, "/HT2020", "/gridsearch_002_binaria2.txt")
 
 # Escribo los titulos al archivo donde van a quedar los resultados
 # atencion que si ya existe el archivo, esta instruccion LO SOBREESCRIBE,
@@ -156,7 +168,8 @@ tictoc::tic("Comienzo del loop")
 for (vmax_depth in c(4, 6, 8, 10, 12, 14)) {
   for (vmin_split in c(1000, 800, 600, 400, 200, 100, 50, 20, 10)) {
     for (vmin_bucket in c(floor(vmin_split/2), floor(vmin_split/4), floor(vmin_split/6), floor(vmin_split/8))) {
-      for (vcp in c(1, 0.5, 0.1, 0.05, 0.01, 0.005)) {
+      #for (vcp in c(1, 0.5, 0.1, 0.05, 0.01, 0.005)) {
+      for (vcp in c(0.01)) {
         # notar como se agrega
         
         if(vmin_bucket < 2) { next }
