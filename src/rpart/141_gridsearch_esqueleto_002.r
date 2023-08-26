@@ -86,8 +86,8 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
   ]
   
   dataset[ fold == 2, .N ]
-  dataset[ fold == 2, sum(prediccion[, "BAJA+2"] > 0.025) ]
-  dataset[ fold == 2, sum(prediccion[, "BAJA+2"] < 0.025) ]
+  dataset[ fold == 2, sum(ifelse(prediccion[, "BAJA+2"] > 0.025, ifelse(clase_ternaria == "BAJA+2", 1, 0), 0)) ]
+  dataset[ fold == 2, sum(ifelse(prediccion[, "BAJA+2"] < 0.025, ifelse(clase_ternaria == "BAJA+2", 1, 0), 0)) ]
   
   # escalo la ganancia como si fuera todo el dataset
   ganancia_test_normalizada <- ganancia_test / 0.3

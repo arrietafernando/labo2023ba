@@ -62,7 +62,8 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
   modelo <- rpart("clase_binaria2 ~ .",
     data = dataset[fold == 1], # fold==1  es training,  el 70% de los datos
     xval = 0,
-    control = param_basicos
+    control = param_basicos,
+    method = "class"
   ) # aqui van los parametros del arbol
 
   # aplico el modelo a los datos de testing
@@ -86,8 +87,8 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
   ]
 
   dataset[ fold == 2, .N ]
-  dataset[ fold == 2, sum(prediccion[, "pos"] > 0.025) ]
-  dataset[ fold == 2, sum(prediccion[, "pos"] < 0.025) ]
+  dataset[ fold == 2, sum(ifelse(prediccion[, "pos"] > 0.025, ifelse(clase_binaria2 == "pos", 1, 0), 0)) ]
+  dataset[ fold == 2, sum(ifelse(prediccion[, "pos"] < 0.025, ifelse(clase_binaria2 == "pos", 1, 0), 0)) ]
   
   # escalo la ganancia como si fuera todo el dataset
   ganancia_test_normalizada <- ganancia_test / 0.3
