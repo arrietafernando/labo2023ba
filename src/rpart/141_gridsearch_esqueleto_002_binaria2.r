@@ -66,7 +66,7 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
   ) # aqui van los parametros del arbol
 
   # aplico el modelo a los datos de testing
-  prediccion <- rpart.predict(modelo, # el modelo que genere recien
+  prediccion <- predict(modelo, # el modelo que genere recien
     newdata = dataset[fold == 2], # fold==2  es testing, el 30% de los datos
     type = "prob"
   ) # type= "prob"  es que devuelva la probabilidad
