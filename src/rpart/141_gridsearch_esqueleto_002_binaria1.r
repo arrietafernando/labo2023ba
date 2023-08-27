@@ -67,7 +67,7 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
 
   # aplico el modelo a los datos de testing
   prediccion <- predict(modelo, # el modelo que genere recien
-    data = dataset[fold == 2], # fold==2  es testing, el 30% de los datos
+    newdata = dataset[fold == 2], # fold==2  es testing, el 30% de los datos
     type = "prob"
   ) # type= "prob"  es que devuelva la probabilidad
 
@@ -85,9 +85,9 @@ ArbolEstimarGanancia <- function(semilla, param_basicos) {
     ))
   ]
 
-  dataset[ fold == 2, .N ]
-  dataset[ fold == 2, sum(prediccion[, "pos"] > 0.025) ]
-  dataset[ fold == 2, sum(prediccion[, "pos"] < 0.025) ]
+  #dataset[ fold == 2, .N ]
+  #dataset[ fold == 2, sum(prediccion[, "pos"] > 0.025) ]
+  #dataset[ fold == 2, sum(prediccion[, "pos"] < 0.025) ]
   
   # escalo la ganancia como si fuera todo el dataset
   ganancia_test_normalizada <- ganancia_test / 0.3

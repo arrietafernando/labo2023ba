@@ -169,7 +169,7 @@ tictoc::tic("Comienzo del loop")
 for (vmax_depth in c(4, 6, 8, 10, 12, 14)) {
   for (vmin_split in c(1000, 800, 600, 400, 200, 100, 50, 20, 10)) {
     for (vmin_bucket in c(floor(vmin_split/2), floor(vmin_split/4), floor(vmin_split/6), floor(vmin_split/8))) {
-      for (vcp in c(1, 0.5, 0.1, 0.05, 0.01, 0.005)) {
+      for (vcp in c(0.75, 0.5, 0.1, 0.05, 0.01, 0.005)) {
       #for (vcp in c(0.01)) {
         # notar como se agrega
         
