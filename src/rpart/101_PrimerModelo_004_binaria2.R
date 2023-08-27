@@ -47,15 +47,15 @@ modelo <- rpart(
         cp = -0.005, # esto significa no limitar la complejidad de los splits
         minsplit = 50, # minima cantidad de registros para que se haga el split
         minbucket = 8, # tamaño minimo de una hoja
-        maxdepth = 8
+        #maxdepth = 8
 ) # profundidad maxima del arbol
 
 
 # grafico el arbol
-prp(modelo,
-        extra = 101, digits = -5,
-        branch = 1, type = 4, varlen = 0, faclen = 0
-)
+# prp(modelo,
+#         extra = 101, digits = -5,
+#         branch = 1, type = 4, varlen = 0, faclen = 0
+# )
 
 
 # aplico el modelo a los datos nuevos
@@ -64,7 +64,7 @@ prediccion <- predict(
         newdata = dapply,
         type = "prob"
 )
-
+prediccion
 # prediccion es una matriz con TRES columnas,
 # llamadas "BAJA+1", "BAJA+2"  y "CONTINUA"
 # cada columna es el vector de probabilidades
@@ -74,18 +74,35 @@ dapply[, prob_baja2 := prediccion[, "BAJA+2"]]
 
 # solo le envio estimulo a los registros
 #  con probabilidad de BAJA+2 mayor  a  1/40
-dapply[, Predicted := as.numeric(prob_baja2 > 1 / 40)]
+dapply[, Predicted := as.numeric(prob_baja2 > 0.025)]
+
+##
+# calculo la ganancia en testing  qu es fold==2
+ganancia_test <- dapply[,
+  sum(ifelse(prob_baja2 > 0.025,
+             ifelse(Predicted == 1, 117000, -3000),
+             0
+  ))
+]
+
+ganancia_test
+
+dapply[ , .N ]
+dapply[ , sum(Predicted == 1) ]
+dapply[ , sum(Predicted == 0) ]
+# escalo la ganancia como si fuera todo el dataset
+ganancia_test_normalizada <- ganancia_test / 0.3
+##
 
 # genero el archivo para Kaggle
 # primero creo la carpeta donde va el experimento
 #dir.create("./exp/")
 #dir.create("./exp/KA2001")
-dir.create(paste0(LABO_EXP_WD, "/KA2001"))
+#dir.create(paste0(LABO_EXP_WD, "/KA2001"))
 
 # solo los campos para Kaggle
-fwrite(dapply[, list(numero_de_cliente, Predicted)],
-        #file = "./exp/KA2001/K101_002.csv",
-        file = paste0(LABO_EXP_WD, "/KA2001/K101_003_GS_1.csv"),
-        sep = ","
-)
-
+# fwrite( dapply[, list(numero_de_cliente, Predicted)],
+#         #file = "./exp/KA2001/K101_002.csv",
+#         file = paste0(LABO_EXP_WD, "/KA2001/K101_003_GS_1.csv"),
+#         sep = "," )
+# 
