@@ -44,18 +44,18 @@ modelo <- rpart(
         formula = "clase_ternaria ~ .",
         data = dtrain, # los datos donde voy a entrenar
         xval = 0,
-        cp = -0.005, # esto significa no limitar la complejidad de los splits
+        cp = 0.001, # esto significa no limitar la complejidad de los splits
         minsplit = 50, # minima cantidad de registros para que se haga el split
         minbucket = 8, # tamaño minimo de una hoja
-        #maxdepth = 8
+        maxdepth = 6
 ) # profundidad maxima del arbol
 
 
 # grafico el arbol
-# prp(modelo,
-#         extra = 101, digits = -5,
-#         branch = 1, type = 4, varlen = 0, faclen = 0
-# )
+prp(modelo,
+        extra = 101, digits = -5,
+        branch = 1, type = 4, varlen = 0, faclen = 0
+)
 
 
 # aplico el modelo a los datos nuevos
