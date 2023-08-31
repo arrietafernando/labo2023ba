@@ -6,6 +6,29 @@
 rm(list = ls()) # Borro todos los objetos
 gc() # Garbage Collection
 
+
+################################################################################
+################################################################################
+
+#ENV = "GCP"
+ENV = "MAC"
+
+LABO_PROJ_WD   = setwd("..")
+LABO_PROJ_WD   = "/Users/fernando/Library/CloudStorage/Dropbox/MBA/UA - Catedra Labo I/labo_github"
+if(ENV == "MAC") {
+  LABO_BUCKET_WD = paste0(LABO_PROJ_WD, "/buckets")
+} else {
+  LABO_BUCKET_WD = paste0("~/buckets/b1/")
+}
+LABO_DATA_WD   = paste0(LABO_BUCKET_WD, "/datasets")
+LABO_EXP_WD    = paste0(LABO_BUCKET_WD, "/exp")
+
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
+
+################################################################################
+################################################################################
+
+
 require("data.table")
 require("rpart")
 
@@ -14,7 +37,7 @@ PARAM <- list()
 PARAM$experimento <- 3210
 
 # Establezco la semilla aleatoria, cambiar por SU primer semilla
-PARAM$semilla <- 102191
+PARAM$semilla <- MIS_SEMILLAS[1]
 
 # parameetros rpart
 PARAM$rpart_param <- list(
@@ -35,21 +58,24 @@ PARAM$num_trees_max <- 500
 #------------------------------------------------------------------------------
 # Aqui comienza el programa
 
-setwd("~/buckets/b1/") # Establezco el Working Directory
+#setwd("~/buckets/b1/") # Establezco el Working Directory
+setwd(LABO_BUCKET_WD)
 
 # cargo los datos
-dataset <- fread("./datasets/dataset_pequeno.csv")
+#dataset <- fread("./datasets/dataset_pequeno.csv")
+dataset <- fread( paste0(LABO_DATA_WD, "/dataset_pequeno.csv") )
 
 
 # creo la carpeta donde va el experimento
-dir.create("./exp/", showWarnings = FALSE)
-carpeta_experimento <- paste0("./exp/KA", PARAM$experimento, "/")
-dir.create(paste0("./exp/KA", PARAM$experimento, "/"),
-  showWarnings = FALSE
-)
+#dir.create("./exp/", showWarnings = FALSE)
+#carpeta_experimento <- paste0("./exp/KA", PARAM$experimento, "/")
+#dir.create(paste0("./exp/KA", PARAM$experimento, "/"),  showWarnings = FALSE)
+
+dir.create(LABO_EXP_WD, showWarnings = FALSE)
+carpeta_experimento <- paste0(LABO_EXP_WD, "/KA", PARAM$experimento, "/")
+dir.create(carpeta_experimento)
 
 setwd(carpeta_experimento)
-
 
 # que tamanos de ensemble grabo a disco, pero siempre debo generar los 500
 grabar <- c(1, 5, 10, 50, 100, 200, 500)
@@ -67,13 +93,11 @@ dapply[, prob_acumulada := 0]
 campos_buenos <- copy(setdiff(colnames(dtrain), c("clase_ternaria")))
 
 
-
 # Genero las salidas
 set.seed(PARAM$semilla) # Establezco la semilla aleatoria
 
 for (arbolito in 1:PARAM$num_trees_max) {
-  qty_campos_a_utilizar <- as.integer(length(campos_buenos)
-  * PARAM$feature_fraction)
+  qty_campos_a_utilizar <- as.integer(length(campos_buenos) * PARAM$feature_fraction)
 
   campos_random <- sample(campos_buenos, qty_campos_a_utilizar)
 
