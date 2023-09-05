@@ -29,20 +29,20 @@ options(error = function() {
   stop("exiting after script error")
 })
 
-
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
 
-PARAM$experimento <- "HT4230"
+PARAM$experimento <- "HT4230_2"
 
 PARAM$input$dataset <- "./datasets/dataset_pequeno.csv"
 PARAM$input$training <- c(202107) # los meses en los que vamos a entrenar
 
 # un undersampling de 0.1  toma solo el 10% de los CONTINUA
 PARAM$trainingstrategy$undersampling <- 1.0
-PARAM$trainingstrategy$semilla_azar <- 102191 # Aqui poner su  primer  semilla
+PARAM$trainingstrategy$semilla_azar <- 591067 # Aqui poner su  primer  semilla
 
 PARAM$hyperparametertuning$iteraciones <- 100
 PARAM$hyperparametertuning$xval_folds <- 5
@@ -50,7 +50,7 @@ PARAM$hyperparametertuning$POS_ganancia <- 117000
 PARAM$hyperparametertuning$NEG_ganancia <- -3000
 
 # Aqui poner su segunda semilla
-PARAM$hyperparametertuning$semilla_azar <- 200177
+PARAM$hyperparametertuning$semilla_azar <- 157991
 #------------------------------------------------------------------------------
 
 # Aqui se cargan los bordes de los hiperparametros
@@ -318,12 +318,26 @@ surr.km <- makeLearner(
   control = list(trace = TRUE)
 )
 
+tictoc::tic("Optimizacion Bayesiana con LightGBM")
 # inicio la optimizacion bayesiana
 if (!file.exists(kbayesiana)) {
   run <- mbo(obj.fun, learner = surr.km, control = ctrl)
 } else {
   run <- mboContinue(kbayesiana) # retomo en caso que ya exista
 }
-
+tictoc::toc() # 44183.696 sec elapsed en Mac M1 Max , 12,5 hs
 
 cat("\n\nLa optimizacion Bayesiana ha terminado\n")
+
+#' Resultados:
+#' 
+#' ganancia: 69255000
+#' iteracion: 53
+#' seed:	157991
+#' learning_rate: 0.0101517246779403
+#' feature_fraction: 0.995021922590851
+#' min_data_in_leaf: 1982
+#' num_leaves: 269
+#' envios: 10836
+#' num_iterations: 1476
+#' 

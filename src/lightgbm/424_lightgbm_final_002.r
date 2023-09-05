@@ -10,23 +10,37 @@ gc() # garbage collection
 require("data.table")
 require("lightgbm")
 
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
 PARAM <- list()
-PARAM$experimento <- "KA4240"
+PARAM$experimento <- "KA4240_2"
 
 PARAM$input$dataset <- "./datasets/dataset_pequeno.csv"
 PARAM$input$training <- c(202107) # meses donde se entrena el modelo
 PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 
-PARAM$finalmodel$semilla <- 102191
+#' Resultados script: 423_lightgbm_binaria_BO_001.r
+#' 
+#' ganancia: 69255000
+#' iteracion: 53
+#' seed:	157991
+#' learning_rate: 0.0101517246779403
+#' feature_fraction: 0.995021922590851
+#' min_data_in_leaf: 1982
+#' num_leaves: 269
+#' envios: 10836
+#' num_iterations: 1476
+#' 
 
-PARAM$finalmodel$num_iterations <- 559
-PARAM$finalmodel$learning_rate <- 0.0100746999
-PARAM$finalmodel$feature_fraction <- 0.5144127527
-PARAM$finalmodel$min_data_in_leaf <- 505
-PARAM$finalmodel$num_leaves <- 44
+PARAM$finalmodel$semilla <- 157991 # segunda semilla usada para BO de hyperparametros
+
+PARAM$finalmodel$num_iterations <- 1476
+PARAM$finalmodel$learning_rate <- 0.0101517246779403
+PARAM$finalmodel$feature_fraction <- 0.995021922590851
+PARAM$finalmodel$min_data_in_leaf <- 1982
+PARAM$finalmodel$num_leaves <- 269
 
 
 PARAM$finalmodel$max_bin <- 31
@@ -146,3 +160,4 @@ for (envios in cortes) {
 }
 
 cat("\n\nLa generacion de los archivos para Kaggle ha terminado\n")
+
