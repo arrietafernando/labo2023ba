@@ -10,6 +10,7 @@ gc() # garbage collection
 require("data.table")
 require("lightgbm")
 
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # defino los parametros de la corrida, en una lista, la variable global  PARAM
 #  muy pronto esto se leera desde un archivo formato .yaml
@@ -20,7 +21,7 @@ PARAM$input$dataset <- "./datasets/dataset_pequeno.csv"
 PARAM$input$training <- c(202107) # meses donde se entrena el modelo
 PARAM$input$future <- c(202109) # meses donde se aplica el modelo
 
-PARAM$finalmodel$semilla <- 102191
+PARAM$finalmodel$semilla <- 157991 # segunda semilla usada para BO de hyperparametros
 
 PARAM$finalmodel$num_iterations <- 559
 PARAM$finalmodel$learning_rate <- 0.0100746999

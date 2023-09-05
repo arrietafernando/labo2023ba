@@ -16,7 +16,7 @@ dir.create("./exp/EA4810/", showWarnings = FALSE)
 setwd("./exp/EA4810")
 
 # uso esta semilla para los canaritos
-set.seed(102191)
+set.seed(591067)
 
 # agrego 30 variables canarito,
 #  random distribucion uniforme en el intervalo [0,1]
