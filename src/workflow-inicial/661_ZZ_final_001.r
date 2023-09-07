@@ -32,6 +32,7 @@ require("yaml")
 
 require("lightgbm")
 
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # Parametros del script
 PARAM <- list()
@@ -43,7 +44,8 @@ PARAM$exp_input <- "HT6510"
 PARAM$modelos_rank <- c(1)
 
 # reemplazar por las propias semillas
-PARAM$semillas <- c(102191, 200177, 410551, 552581, 892237)
+#PARAM$semillas <- c(102191, 200177, 410551, 552581, 892237)
+PARAM$semillas <- MIS_SEMILLAS
 
 PARAM$kaggle$envios_desde <- 9500L
 PARAM$kaggle$envios_hasta <- 11500L

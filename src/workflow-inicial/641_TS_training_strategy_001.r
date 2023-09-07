@@ -8,6 +8,7 @@ gc(full = TRUE) # garbage collection
 require("data.table")
 require("yaml")
 
+MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # Parametros del script
 PARAM <- list()
@@ -38,7 +39,8 @@ PARAM$train$testing <- c(202107)
 # 1.0 significa NO undersampling ,  0.1  es quedarse con el 10% de los CONTINUA
 PARAM$train$undersampling <- 0.1
 
-PARAM$train$semilla <- 102191 # cambiar por su propia semilla  !!!
+#PARAM$train$semilla <- 102191 # cambiar por su propia semilla  !!!
+PARAM$train$semilla <- MIS_SEMILLAS[1]
 
 PARAM$home <- "~/buckets/b1/"
 # FIN Parametros del script
