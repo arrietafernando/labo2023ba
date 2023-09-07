@@ -29,9 +29,9 @@ MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # Parametros del script
 PARAM <- list()
-PARAM$experimento <- "HT6510_1"
+PARAM$experimento <- "HT6510_2"
 
-PARAM$exp_input <- "TS6410"
+PARAM$exp_input <- "TS6410_2"
 
 # En caso que se haga cross validation, se usa esta cantidad de folds
 PARAM$lgb_crossvalidation_folds <- 5
