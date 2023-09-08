@@ -1,6 +1,8 @@
 # Experimentos Colaborativos Default
 # Workflow  Feature Engineering historico
 
+# VM: 8 cpu, 614GB Ram (quizas funciona con 512GB)
+
 # limpio la memoria
 rm(list = ls(all.names = TRUE)) # remove all objects
 gc(full = TRUE) # garbage collection
