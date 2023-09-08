@@ -12,9 +12,9 @@ MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # Parametros del script
 PARAM <- list()
-PARAM$experimento <- "TS6410_2"
+PARAM$experimento <- "TS6410_3"
 
-PARAM$exp_input <- "FE6310_2"
+PARAM$exp_input <- "FE6310_3"
 
 # me salteo los meses duros de pandemia, pero llego hasta 201907 en training
 # entreno en 18 meses
