@@ -1,6 +1,10 @@
 # Experimentos Colaborativos Default
 # Workflow  Feature Engineering historico
 
+## Requiera una VM de 8 cpus y 256GB de RAM mínimo
+## Region: (us-west4) Las Vegas 
+## Zona: us-west4-b o us-west4-c
+
 # limpio la memoria
 rm(list = ls(all.names = TRUE)) # remove all objects
 gc(full = TRUE) # garbage collection

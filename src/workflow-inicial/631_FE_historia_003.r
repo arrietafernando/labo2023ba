@@ -1,7 +1,9 @@
 # Experimentos Colaborativos Default
 # Workflow  Feature Engineering historico
 
-# VM: 8 cpu, 614GB Ram (quizas funciona con 512GB)
+## Requiera una VM de 8 cpus y 512GB de RAM mínimo (614GB máximo posible recomendable)
+## Region: (us-west4) Las Vegas 
+## Zona: us-west4-b o us-west4-c
 
 # limpio la memoria
 rm(list = ls(all.names = TRUE)) # remove all objects
