@@ -52,7 +52,7 @@ PARAM$kaggle$envios_hasta <- 11500L
 PARAM$kaggle$envios_salto <- 500L
 
 # para el caso que deba graficar
-PARAM$graficar$envios_desde <- 8000L
+PARAM$graficar$envios_desde <- 4000L
 PARAM$graficar$envios_hasta <- 20000L
 PARAM$graficar$ventana_suavizado <- 2001L
 
