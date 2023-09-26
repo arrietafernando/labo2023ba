@@ -479,7 +479,7 @@ cols_lagueables <- copy(setdiff(
   c("numero_de_cliente", "foto_mes", "clase_ternaria")
 ))
 
-cols_lagueables_monto <- cols_lagueables[grepl("^m|^Visa_m|^Master_m", cols_lagueables)]
+cols_lagueables_monto <- cols_lagueables[grepl("^m|^Visa_m|^Master_m|^vm_m|^vmr_m|^vmr_M|^vmr_V", cols_lagueables)]
 
 # ordeno el dataset por <numero_de_cliente, foto_mes> para poder hacer lags
 #  es MUY  importante esta linea
