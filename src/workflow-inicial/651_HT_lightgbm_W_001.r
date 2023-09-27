@@ -137,7 +137,7 @@ fganancia_lgbm_meseta <- function(probs, datos) {
   vlabels <- get_field(datos, "label")
   vpesos <- get_field(datos, "weight")
 
-  #
+  # weights
   vpesos <- (vpesos * 10^ROUND_DIGITS) %% 1 + 1
   # 
   GLOBAL_arbol <<- GLOBAL_arbol + 1
@@ -512,7 +512,7 @@ weight_meses <- data.table(foto_mes = meses,
                          weight_dis = 1.0)
 
 # puedo usar: weight_exp, weight_pow o weight_dis (desabilitar weights del pasado)
-weights_row <- merge(dataset[ , c("foto_mes")], weight_meses, on = foto_mes, sort = FALSE)[ , weight_exp]
+weights_row <- merge(dataset[ fold_train == 1, c("foto_mes")], weight_meses, on = foto_mes, sort = FALSE)[ , weight_exp]
 
 # (0.6976761 * 10^ROUND_DIGITS) %% 1
 # (0.704688 * 10^ROUND_DIGITS) %% 1
