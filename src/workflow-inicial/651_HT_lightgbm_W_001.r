@@ -503,7 +503,7 @@ campos_buenos <- setdiff(
 )
 
 # Aplico weights a meses a entrenar
-meses <- sort(unique(dataset$foto_mes))
+meses <- sort(dataset[fold_train==1, unique(foto_mes)])
 
 ROUND_DIGITS = 6
 weight_meses <- data.table(foto_mes = meses, 
