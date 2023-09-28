@@ -80,8 +80,8 @@ PARAM$bo_lgb <- makeParamSet(
   makeNumericParam("feature_fraction", lower = 0.01, upper = 1.0),
   makeIntegerParam("num_leaves", lower = 8L, upper = 1024L),
   makeIntegerParam("min_data_in_leaf", lower = 100L, upper = 50000L),
-  #makeNumericParam("decay", lower = 0.95, upper = 1), # -> weight_pow = round( 0.99^(order(-meses)-1), ROUND_DIGITS)
-  makeNumericParam("decay", lower = 50, upper = 200),  # -> weight_exp = round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS)
+  #makeNumericParam("decay", lower = 0.95, upper = 1.0), # -> weight_pow = round( 0.99^(order(-meses)-1), ROUND_DIGITS)
+  makeIntegerParam("decay", lower = 50L, upper = 200L)  # -> weight_exp = round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS)
 )
 
 
@@ -617,8 +617,8 @@ if (dataset[fold_train == 0 & fold_validate == 0 & fold_test == 1, .N] > 0) {
 }
 
 
-
-rm(dataset)
+# IMPORTANTE no borrar
+#rm(dataset)
 gc()
 
 
