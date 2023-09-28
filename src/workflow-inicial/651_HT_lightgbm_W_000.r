@@ -29,7 +29,7 @@ MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # Parametros del script
 PARAM <- list()
-PARAM$experimento <- "HT6510_W_01"
+PARAM$experimento <- "HT6510_W_0"
 
 PARAM$exp_input <- "TS6410"
 
