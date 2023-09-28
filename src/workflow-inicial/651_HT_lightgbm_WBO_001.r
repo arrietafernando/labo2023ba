@@ -278,7 +278,7 @@ EstimarGanancia_lightgbm <- function(x) {
 
   # logueo final
   ds <- list("cols" = ncol(dtrain), "rows" = nrow(dtrain))
-  xx <- c(ds, copy(param_completo))
+  xx <- c(ds, copy(c(PARAM$lgb_basicos, x)))
 
   xx$early_stopping_rounds <- NULL
   xx$num_iterations <- modelo_train$best_iter
