@@ -81,8 +81,8 @@ PARAM$bo_lgb <- makeParamSet(
   makeIntegerParam("num_leaves", lower = 8L, upper = 1024L),
   makeIntegerParam("min_data_in_leaf", lower = 100L, upper = 50000L),
   #makeNumericParam("decay", lower = 0.95, upper = 1.0), # -> weight_pow = round( 0.99^(order(-meses)-1), ROUND_DIGITS)
-  #makeIntegerParam("decay", lower = 50L, upper = 500L),  # -> weight_exp = round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS)
-  makeDiscreteParam("decay", values = seq(50, 500, 25))
+  makeIntegerParam("decay", lower = 50L, upper = 500L)  # -> weight_exp = round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS)
+  #makeDiscreteParam("decay", values = c(50L, 500L))
 )
 
 
