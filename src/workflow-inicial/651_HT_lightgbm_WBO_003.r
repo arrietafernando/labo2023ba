@@ -7,6 +7,7 @@
 #' Considerando que las observaciones (datos de clientes) de meses mas alejados 
 #' al presente tienen menos "peso" y contribuyenen menos al modelo.
 
+
 # limpio la memoria
 rm(list = ls(all.names = TRUE)) # remove all objects
 gc(full = TRUE) # garbage collection
@@ -33,9 +34,13 @@ MIS_SEMILLAS = c(591067, 157991, 689987, 136999, 366467)
 
 # Parametros del script
 PARAM <- list()
-PARAM$experimento <- "HT6510_WBO_2"
+PARAM$experimento <- "HT6510_WBO_3"
 
 PARAM$exp_input <- "TS6410"
+
+# Parametros para WFV con decay exponencial
+ROUND_DIGITS = 6
+W_DECAY_TYPE = "EXP" #  valores:"EXP", "POW" , "DIS"
 
 # En caso que se haga cross validation, se usa esta cantidad de folds
 PARAM$lgb_crossvalidation_folds <- 5
@@ -76,22 +81,27 @@ PARAM$lgb_basicos <- list(
   seed = PARAM$lgb_semilla
 )
 
-
 # Aqui se cargan los hiperparametros que se optimizan
 #  en la Bayesian Optimization
 PARAM$bo_lgb <- makeParamSet(
   makeNumericParam("learning_rate", lower = 0.02, upper = 0.3),
   makeNumericParam("feature_fraction", lower = 0.01, upper = 1.0),
   makeIntegerParam("num_leaves", lower = 8L, upper = 1024L),
-  makeIntegerParam("min_data_in_leaf", lower = 100L, upper = 50000L),
+  makeIntegerParam("min_data_in_leaf", lower = 100L, upper = 50000L)
   #makeNumericParam("decay", lower = 0.95, upper = 1.0), # -> weight_pow = round( 0.99^(order(-meses)-1), ROUND_DIGITS)
-  makeIntegerParam("decay", lower = 50L, upper = 500L)  # -> weight_exp = round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS)
-  #makeDiscreteParam("decay", values = c(50L, 500L))
+  #makeIntegerParam("decay", lower = 50L, upper = 500L)  # -> weight_exp = round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS)
 )
 
+# Hyperparáetros que optimizan el decay
+PARAM$bo_lgb <- c(PARAM$bo_lgb, 
+                  if (W_DECAY_TYPE == "EXP") {
+                    makeParamSet(makeIntegerParam("decay", lower = 50L, upper = 500L))
+                  } else if (W_DECAY_TYPE == "POW") {
+                    makeParamSet(makeNumericParam("decay", lower = 0.95, upper = 1.0))
+                  })
 
 # si usted es ambicioso, y tiene paciencia, podria subir este valor a 100
-PARAM$bo_iteraciones <- 200 # iteraciones de la Optimizacion Bayesiana
+PARAM$bo_iteraciones <- 120 # iteraciones de la Optimizacion Bayesiana
 
 PARAM$home <- "~/buckets/b1/"
 
@@ -204,13 +214,14 @@ EstimarGanancia_lightgbm <- function(x) {
   vcant_optima <<- c()
   set.seed(PARAM$lgb_semilla, kind = "L'Ecuyer-CMRG")
   
-  # weights
+  # weights nuevo
   param_completo[["decay"]] <- NULL
   decay <- x$decay
   
+  # Aplico weights a meses a entrenar
   weight_meses <- data.table(foto_mes = meses)
-  weight_meses[, weight_decay := ifelse(W_DECAY_TYPE == "EXP", round( exp( -(order(-meses)-1)/decay ), ROUND_DIGITS),
-                                        ifelse(W_DECAY_TYPE == "POW", round( decay^(order(-meses)-1), ROUND_DIGITS), 1.0)) ]
+  weight_meses[, weight_decay := if(W_DECAY_TYPE == "EXP") round(exp(-(order(-meses)-1)/decay ), ROUND_DIGITS) else 
+    if(W_DECAY_TYPE == "POW") round(decay^(order(-meses)-1), ROUND_DIGITS) else 1.0 ]
   
   # puedo usar: weight_exp, weight_pow o weight_dis (desabilitar weights del pasado)
   weights_row <- merge(dataset[ fold_train == 1, c("foto_mes")], weight_meses, on = foto_mes, sort = FALSE)[ , weight_decay]
@@ -222,7 +233,7 @@ EstimarGanancia_lightgbm <- function(x) {
                                     ifelse(clase_ternaria == "BAJA+2", 10^-(ROUND_DIGITS+1), 
                                            ifelse(clase_ternaria == "BAJA+1", 0.0, 0.0)) ], 
     free_raw_data = FALSE)
-  # weights
+  # weights nuevo
   
   modelo_train <- lgb.train(
     data = dtrain,
@@ -530,38 +541,20 @@ campos_buenos <- setdiff(
 )
 
 # Aplico weights a meses a entrenar
-ROUND_DIGITS = 6
-W_DECAY_TYPE = "EXP"
-
 meses <- sort(dataset[fold_train==1, unique(foto_mes)])
 
+if(W_DECAY_TYPE == "EXP" || W_DECAY_TYPE == "POW") {
+  decay = PARAM$bo_lgb$pars$decay$lower + (PARAM$bo_lgb$pars$decay$upper - PARAM$bo_lgb$pars$decay$lower)/2
+} else {
+  decay = 1.0
+}
+
 weight_meses <- data.table(foto_mes = meses)
-weight_meses[, weight_decay := ifelse(W_DECAY_TYPE == "EXP", round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS),
-                                    ifelse(W_DECAY_TYPE == "POW", round( 0.99^(order(-meses)-1), ROUND_DIGITS), 1.0)) ]
+weight_meses[, weight_decay := if(W_DECAY_TYPE == "EXP") round(exp(-(order(-meses)-1)/decay ), ROUND_DIGITS) else 
+                                    if(W_DECAY_TYPE == "POW") round(decay^(order(-meses)-1), ROUND_DIGITS) else 1.0 ]
 
 # puedo usar: weight_exp, weight_pow o weight_dis (desabilitar weights del pasado)
 weights_row <- merge(dataset[ fold_train == 1, c("foto_mes")], weight_meses, on = foto_mes, sort = FALSE)[ , weight_decay]
-
-# weight_meses <- data.table(foto_mes = meses, 
-#                          weight_exp = round( exp( -(order(-meses)-1)/100 ), ROUND_DIGITS), 
-#                          weight_pow = round( 0.99^(order(-meses)-1), ROUND_DIGITS), 
-#                          weight_dis = 1.0)
-# 
-# # puedo usar: weight_exp, weight_pow o weight_dis (desabilitar weights del pasado)
-# weights_row <- merge(dataset[ fold_train == 1, c("foto_mes")], weight_meses, on = foto_mes, sort = FALSE)[ , weight_dis]
-
-# (0.6976761 * 10^ROUND_DIGITS) %% 1
-# (0.704688 * 10^ROUND_DIGITS) %% 1
-# test #
-# dt_test <- data.table(foto_mes = meses, clase_ternaria = c("BAJA+2", "BAJA+2", "BAJA+1", "CONTINUA", "BAJA+2", "BAJA+1"), fold_train =c(1,1,1,1,0,0))
-# dt_test
-# 
-# weights_row = merge(dt_test[ fold_train == 1, c("foto_mes")], weight_meses, on = foto_mes, sort = FALSE)[ , weight_exp]
-# weights_row
-# 
-# dt_test[ fold_train == 1, ifelse(clase_ternaria == "BAJA+2", 10^-(ROUND_DIGITS+1),
-#                           ifelse(clase_ternaria == "BAJA+1", 0.0, 0.0)) ] + weights_row
-# test #
 
 # la particion de train siempre va
 dtrain <- lgb.Dataset(
